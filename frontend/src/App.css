@@ -1,4 +1,13 @@
-.counter {
+body {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: #111;
+}
+
+/* .counter {
   font-size: 16px;
   padding: 5px 10px;
   border-radius: 5px;
@@ -181,4 +190,4 @@
     right: 0;
     border-right-color: var(--border);
   }
-}
+} */

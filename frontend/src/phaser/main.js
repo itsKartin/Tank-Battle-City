@@ -1,20 +1,16 @@
-import Phaser, { Scene } from 'phaser';
-
-class BootScene extends Phaser.Scene {
-    preload() {
-        this.load.image('tank', 'assets/sprites/tank.png');
-    }
-    create() {
-        this.add.image(400,300, 'tank');
-    }
-}
+import Phaser from 'phaser';
+import GameScene from './scenes/GameScene';
 
 const config = {
-    type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    parent: 'game-container',
-    scene: [BootScene]
-}
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  parent: 'game-container',
+  physics: {
+    default: 'arcade',
+    arcade: { debug: false }
+  },
+  scene: [GameScene]
+};
 
 export default new Phaser.Game(config);
