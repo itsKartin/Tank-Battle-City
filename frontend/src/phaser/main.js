@@ -1,16 +1,19 @@
 import Phaser from 'phaser';
 import GameScene from './scenes/GameScene';
 
-const config = {
-  type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  parent: 'game-container',
-  physics: {
-    default: 'arcade',
-    arcade: { debug: false }
-  },
-  scene: [GameScene]
-};
+// Ahora la función recibe el contenedor exacto de React (parentElement)
+export const startPhaserGame = (parentElement) => {
+  const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    parent: parentElement, // <--- Le pasamos el elemento real aquí
+    physics: {
+      default: 'arcade',
+      arcade: { debug: false }
+    },
+    scene: [GameScene]
+  };
 
-export default new Phaser.Game(config);
+  return new Phaser.Game(config);
+};
