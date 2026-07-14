@@ -59,6 +59,17 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player1, this.enemiesGroup);
     this.physics.add.collider(this.player2, this.enemiesGroup);
     this.physics.add.overlap(this.bulletsGroup, this.enemiesGroup, this.handleBulletEnemyCollision, null, this);
+    this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
+    this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
+    
+    this.baseGroup = this.physics.add.staticGroup();
+    this.base = this.baseGroup.create(400, 580, 'base');
+    this.physics.add.collider(this.player1, this.baseGroup);
+    this.physics.add.collider(this.player2, this.baseGroup);
+    this.physics.add.collider(this.enemiesGroup, this.baseGroup);
+    this.physics.add.overlap(this.bulletsGroup, this.baseGroup, this.handleBulletBaseCollision, null, this);
+    this.physics.add.overlap(this.enemiesGroup, this.baseGroup, this.handleEnemyBaseCollision, null, this);
+
   }
 
  //Bullet-wall collision 
@@ -88,6 +99,43 @@ export default class GameScene extends Phaser.Scene {
     bulletB.destroy();
   }
 
+  //Bullet-player collision  
+  handleBulletPlayerCollision(player, bullet) {
+    if (bullet.owner instanceof PlayerTank) return;
+    if (!bullet.active) return;
+  
+    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+    bullet.destroy();
+    player.takeDamage();
+  }
+  
+  //Bullet-base collision
+  handleBulletBaseCollision(bullet, base) {
+    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+    bullet.destroy();
+    this.handleGameOver();
+  }
+  
+  //Enemy-base collision
+  handleEnemyBaseCollision(enemy, base) {
+    this.handleGameOver();
+  }
+  
+  //Player l ose
+  handlePlayerDefeat(player) {
+    if (this.player1.lives <= 0 && this.player2.lives <= 0) {
+      this.handleGameOver();
+    }
+  }
+  
+  //Game over
+  handleGameOver() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    this.physics.pause();
+    console.log('game over');
+  }
+
 
   createPlaceholderTextures() {
     const graphics = this.add.graphics();
@@ -100,6 +148,11 @@ export default class GameScene extends Phaser.Scene {
     graphics.fillStyle(0x808080);
     graphics.fillRect(0, 0, 32, 32);
     graphics.generateTexture('steel', 32, 32);
+
+    graphics.clear();
+    graphics.fillStyle(0xffd700);
+    graphics.fillRect(0, 0, 32, 32);
+    graphics.generateTexture('base', 32, 32);
 
     graphics.destroy();
   }
