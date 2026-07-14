@@ -23,7 +23,10 @@ export default class PlayerTank extends Tank {
 
     if (Phaser.Input.Keyboard.JustDown(this.fireKey)) {
       const bullet = this.shoot();
-      if (bullet) this.scene.bullets.push(bullet);
+      if (bullet) {
+        this.scene.bulletsGroup.add(bullet);
+        bullet.launch();
+      }
     }
   }
 }
