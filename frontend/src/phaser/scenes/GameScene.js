@@ -23,6 +23,8 @@ export default class GameScene extends Phaser.Scene {
   } 
 
   preload() {
+    this.load.audio('bgm', 'assets/audio/background.mp3');
+    this.load.audio('shot_sfx', 'assets/audio/shot.mp3');
     this.load.spritesheet('sheet', 'assets/sprites/sheet.png', {
       frameWidth: 32,
       frameHeight: 32
@@ -30,6 +32,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+
+    if (!this.sound.get('bgm')) {
+      this.bgm = this.sound.add('bgm', { loop: true, volume: 0.4 });
+      this.bgm.play();
+    } else {
+      this.bgm = this.sound.get('bgm');
+    }
 
     //pause key and menu instance
     this.physics.resume();
