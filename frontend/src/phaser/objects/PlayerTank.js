@@ -7,6 +7,24 @@ export default class PlayerTank extends Tank {
     this.controls = controls;
     this.cursors = scene.input.keyboard.addKeys(controls);
     this.fireKey = scene.input.keyboard.addKey(controls.fire);
+
+    this.lives = 3;
+    this.startX = x;
+    this.startY = y;
+  }
+
+  takeDamage() {
+    this.lives--;
+    if (this.lives <= 0) {
+      this.scene.handlePlayerDefeat(this);
+    } else {
+      this.respawn();
+    }
+  }
+
+  respawn() {
+    this.setPosition(this.startX, this.startY);
+    this.stop();
   }
 
   update() {

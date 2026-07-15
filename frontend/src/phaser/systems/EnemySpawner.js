@@ -20,21 +20,23 @@ export default class EnemySpawner {
   }
 
   trySpawn() {
-    if (this.spawned >= this.totalEnemies) {
-      this.spawnTimer.remove();
-      return;
-    }
-    if (this.activeEnemies.length >= this.maxOnScreen) return;
-
-    const point = Phaser.Utils.Array.GetRandom(this.spawnPoints);
-    const enemy = new EnemyTank(this.scene, point.x, point.y, 'sheet', Frames.ENEMY);
-    this.scene.enemiesGroup.add(enemy);
-    this.activeEnemies.push(enemy);
-    this.spawned++;
+      if (this.spawned >= this.totalEnemies) {
+        this.spawnTimer.remove();
+        return;
+      }
+      if (this.activeEnemies.length >= this.maxOnScreen) return;
+  
+      const point = Phaser.Utils.Array.GetRandom(this.spawnPoints);
+      const enemy = new EnemyTank(this.scene, point.x, point.y, 'sheet', Frames.ENEMY);
+      this.scene.enemiesGroup.add(enemy);
+      enemy.pickRandomDirection();
+      this.activeEnemies.push(enemy);
+      this.spawned++;
   }
 
   removeEnemy(enemy) {
-    this.activeEnemies = this.activeEnemies.filter(e => e !== enemy);
+      const index = this.activeEnemies.indexOf(enemy);
+      if (index !== -1) this.activeEnemies.splice(index, 1);
   }
 
   isLevelComplete() {

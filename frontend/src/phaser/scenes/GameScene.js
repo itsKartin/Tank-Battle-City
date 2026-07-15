@@ -75,10 +75,12 @@ export default class GameScene extends Phaser.Scene {
     this.player1 = new PlayerTank(this, 100, 100, 'sheet', {
       up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
     }, Frames.PLAYER1);
+    this.physics.add.existing(this.player1);
     
     this.player2 = new PlayerTank(this, 700, 500, 'sheet', {
       up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
     }, Frames.PLAYER2);
+    this.physics.add.existing(this.player2);
 
     this.physics.add.collider(this.player1, this.wallsGroup);
     this.physics.add.collider(this.player2, this.wallsGroup);
@@ -118,13 +120,71 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.bulletsGroup, this.baseGroup, this.handleBulletBaseCollision, null, this);
     this.physics.add.overlap(this.enemiesGroup, this.baseGroup, this.handleEnemyBaseCollision, null, this);
 
-    this.physics.add.overlap(this.bulletsGroup, this.wallsGroup, this.handleBulletWallCollision, null, this);
+        this.physics.add.overlap(this.bulletsGroup, this.wallsGroup, this.handleBulletWallCollision, null, this);
   }
 
+ //Bullet-wall collision 
   handleBulletWallCollision(bullet, wall) {
     wall.hit();
     bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
     bullet.destroy();
+  }
+
+  //Bullet-enemy collision
+  handleBulletEnemyCollision(bullet, enemy) {
+    if (bullet.owner instanceof EnemyTank) return;
+  
+    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+    bullet.destroy();
+    this.enemySpawner.removeEnemy(enemy);
+    enemy.destroy();
+  }
+
+  //Bullet-bullet collision  
+  handleBulletBulletCollision(bulletA, bulletB) {
+  if (!bulletA.active || !bulletB.active) return;
+  
+    bulletA.owner.activeBullets = bulletA.owner.activeBullets.filter(b => b !== bulletA);
+    bulletB.owner.activeBullets = bulletB.owner.activeBullets.filter(b => b !== bulletB);
+    bulletA.destroy();
+    bulletB.destroy();
+  }
+
+  //Bullet-player collision  
+  handleBulletPlayerCollision(player, bullet) {
+    if (bullet.owner instanceof PlayerTank) return;
+    if (!bullet.active) return;
+  
+    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+    bullet.destroy();
+    player.takeDamage();
+  }
+  
+  //Bullet-base collision
+  handleBulletBaseCollision(bullet, base) {
+    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+    bullet.destroy();
+    this.handleGameOver();
+  }
+  
+  //Enemy-base collision
+  handleEnemyBaseCollision(enemy, base) {
+    this.handleGameOver();
+  }
+  
+  //Player l ose
+  handlePlayerDefeat(player) {
+    if (this.player1.lives <= 0 && this.player2.lives <= 0) {
+      this.handleGameOver();
+    }
+  }
+  
+  //Game over
+  handleGameOver() {
+    if (this.gameOver) return;
+    this.gameOver = true;
+    this.physics.pause();
+    console.log('game over');
   }
 
 
@@ -140,13 +200,27 @@ export default class GameScene extends Phaser.Scene {
     graphics.fillRect(0, 0, 32, 32);
     graphics.generateTexture('steel', 32, 32);
 
+    graphics.clear();
+    graphics.fillStyle(0xffd700);
+    graphics.fillRect(0, 0, 32, 32);
+    graphics.generateTexture('base', 32, 32);
+
     graphics.destroy();
   }
 
   update() {
     this.player1.update();
     this.player2.update();
-  
+
+    this.enemySpawner.activeEnemies.forEach(enemy => {
+      const outOfBounds = enemy.x < 0 || enemy.x > 800 || enemy.y < 0 || enemy.y > 600;
+      if (outOfBounds) enemy.stop();
+    });
+    
+    if (this.enemySpawner.isLevelComplete()) {
+        console.log('level complete');
+    }
+
     this.bulletsGroup.getChildren().forEach(bullet => {
       const outOfBounds =
         bullet.x < 0 || bullet.x > 800 || bullet.y < 0 || bullet.y > 600;

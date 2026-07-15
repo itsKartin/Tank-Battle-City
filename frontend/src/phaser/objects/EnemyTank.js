@@ -12,7 +12,6 @@ const VECTORS = {
 export default class EnemyTank extends Tank {
   constructor(scene, x, y, texture, frame) {
     super(scene, x, y, texture, frame);
-    this.pickRandomDirection();
 
     this.directionTimer = scene.time.addEvent({
       delay: Phaser.Math.Between(1000, 2500),
