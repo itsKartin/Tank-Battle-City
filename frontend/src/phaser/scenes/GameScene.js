@@ -7,6 +7,8 @@ import Smoke from '../objects/Smoke';
 import EnemySpawner from '../systems/EnemySpawner';
 import EnemyTank from '../objects/EnemyTank';
 import Frames from '../constants/Frames';
+import PauseMenu from '../ui/PauseMenu';
+import GameOverMenu from '../ui/GameOverMenu';
 
 export default class GameScene extends Phaser.Scene {
   init(data) {
@@ -25,6 +27,16 @@ export default class GameScene extends Phaser.Scene {
   }
 
   create() {
+
+    //pause key and menu instance
+    this.physics.resume();
+    this.time.paused = false;
+
+    this.gameOver = false;
+    this.isPaused = false;
+    this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
+    this.pauseMenu = new PauseMenu(this);
+    this.gameOverMenu = new GameOverMenu(this);
 
     //Water animeation
     this.anims.create({
@@ -186,13 +198,37 @@ export default class GameScene extends Phaser.Scene {
       this.handleGameOver();
     }
   }
+
+  togglePause() {
+    if (this.isPaused) this.resumeGame();
+    else this.pauseGame();
+  }
+
+  pauseGame() {
+    this.isPaused = true;
+    this.physics.pause();
+    this.time.paused = true;
+    this.pauseMenu.show(
+      () => this.resumeGame(),
+      () => this.scene.start('MenuScene')
+    );
+  }
+
+  resumeGame() {
+    this.isPaused = false;
+    this.physics.resume();
+    this.time.paused = false;
+    this.pauseMenu.hide();
+  }
   
   //Game over
+ 
   handleGameOver() {
     if (this.gameOver) return;
     this.gameOver = true;
     this.physics.pause();
-    console.log('game over');
+    this.time.paused = true;
+    this.gameOverMenu.show(() => this.scene.start('MenuScene'));
   }
 
 
@@ -217,6 +253,13 @@ export default class GameScene extends Phaser.Scene {
   }
 
   update() {
+
+    if (Phaser.Input.Keyboard.JustDown(this.pauseKey) && !this.gameOver) {
+      this.togglePause();
+    }
+
+    if (this.isPaused) return;
+
     this.player1.update();
     this.player2.update();
 

@@ -17,7 +17,9 @@ export default class Bullet extends Phaser.GameObjects.Sprite {
   }
 
   launch() {
-    this.setScale(1.8);
+    this.setScale(1);
+     this.body.setSize(6, 6);
+    this.body.setOffset(13, 13);
     this.rotation = ROTATIONS[this.direction];
 
     const velocities = {
