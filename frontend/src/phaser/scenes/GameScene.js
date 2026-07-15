@@ -128,17 +128,26 @@ export default class GameScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
     }, Frames.PLAYER1);
     this.physics.add.existing(this.player1);
-
-    this.player2 = new PlayerTank(this, map.player2Start.x, map.player2Start.y, 'sheet', {
-      up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
-    }, Frames.PLAYER2);
-    this.physics.add.existing(this.player2);
-
+    
+    if (this.mode === 2) {
+      this.player2 = new PlayerTank(this, map.player2Start.x, map.player2Start.y, 'sheet', {
+        up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
+      }, Frames.PLAYER2);
+      this.physics.add.existing(this.player2);
+    }
+    
     this.physics.add.collider(this.player1, this.wallsGroup);
-    this.physics.add.collider(this.player2, this.wallsGroup);
-    this.physics.add.collider(this.player1, this.player2);
     this.physics.add.collider(this.player1, this.watersGroup);
-    this.physics.add.collider(this.player2, this.watersGroup);
+    this.physics.add.collider(this.player1, this.enemiesGroup);
+    this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
+    this.physics.add.collider(this.player1, this.baseGroup);
+    
+    if (this.player2) {
+      this.physics.add.collider(this.player2, this.wallsGroup);
+      this.physics.add.collider(this.player2, this.watersGroup);
+      this.physics.add.collider(this.player1, this.player2);
+      this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
+    }
 
     //Enemy
     this.enemiesGroup = this.physics.add.group();
@@ -152,15 +161,12 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.enemiesGroup, this.wallsGroup);
     this.physics.add.collider(this.enemiesGroup, this.watersGroup);
     this.physics.add.collider(this.player1, this.enemiesGroup);
-    this.physics.add.collider(this.player2, this.enemiesGroup);
     this.physics.add.overlap(this.bulletsGroup, this.enemiesGroup, this.handleBulletEnemyCollision, null, this);
     this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
-    this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
     this.baseGroup = this.physics.add.staticGroup();
     this.base = this.baseGroup.create(map.basePosition.x, map.basePosition.y, 'sheet', Frames.BASE_A);    this.base.play('base_idle');
 
     this.physics.add.collider(this.player1, this.baseGroup);
-    this.physics.add.collider(this.player2, this.baseGroup);
     this.physics.add.collider(this.enemiesGroup, this.baseGroup);
     this.physics.add.overlap(this.bulletsGroup, this.baseGroup, this.handleBulletBaseCollision, null, this);
     this.physics.add.overlap(this.enemiesGroup, this.baseGroup, this.handleEnemyBaseCollision, null, this);
@@ -220,7 +226,9 @@ export default class GameScene extends Phaser.Scene {
   
   //Player l ose
   handlePlayerDefeat(player) {
-    if (this.player1.lives <= 0 && this.player2.lives <= 0) {
+    const p1Dead = this.player1.lives <= 0;
+    const p2Dead = !this.player2 || this.player2.lives <= 0;
+    if (p1Dead && p2Dead) {
       this.handleGameOver();
     }
   }
@@ -291,7 +299,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.isPaused) return;
 
     this.player1.update();
-    this.player2.update();
+    if (this.player2) this.player2.update();
 
     this.enemySpawner.activeEnemies.forEach(enemy => {
       const outOfBounds = enemy.x < 0 || enemy.x > 800 || enemy.y < 0 || enemy.y > 600;
