@@ -12,15 +12,7 @@ function HudCorner({ className }) {
 function GameSection() {
   const wrapperRef = useRef(null);
 
-  const handleFullscreen = () => {
-    const el = wrapperRef.current;
-    if (!el) return;
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      el.requestFullscreen?.();
-    }
-  };
+  
 
   return (
     <section id="juego" className="relative py-20 px-6">
@@ -49,12 +41,7 @@ function GameSection() {
           </div>
         </div>
 
-        <button
-          onClick={handleFullscreen}
-          className="mt-4 font-display text-xs uppercase tracking-wider px-4 py-2 rounded border border-[#1f2833] text-[#8d9078] hover:border-[#f2a900] hover:text-[#f2a900] transition-colors"
-        >
-          ⛶ Pantalla completa
-        </button>
+        
       </div>
     </section>
   );

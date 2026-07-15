@@ -10,7 +10,7 @@ import Frames from '../constants/Frames';
 import PauseMenu from '../ui/PauseMenu';
 import GameOverMenu from '../ui/GameOverMenu';
 import ScoreManager from '../systems/ScoreManager';
-import FullscreenGuard from '../systems/FullscreenGuard';
+import { MAP_1, buildMap } from '../maps/maps';
 
 
 export default class GameScene extends Phaser.Scene {
@@ -44,7 +44,7 @@ export default class GameScene extends Phaser.Scene {
     this.scoreManager = new ScoreManager(this, 16, 16);
 
 
-    this.fullscreenGuard = new FullscreenGuard();
+    
 
     //Water animeation
     this.anims.create({
@@ -72,15 +72,23 @@ export default class GameScene extends Phaser.Scene {
 
     //water
     this.watersGroup = this.physics.add.staticGroup();
-    const water1 = new Water(this, 400, 300, 'sheet', Frames.WATER_A);
-    water1.play('water_ripple');
-    this.watersGroup.add(water1);
-
-    //Smoke
     this.smokeGroup = this.add.group();
-    const smoke1 = new Smoke(this, 500, 400, 'sheet', Frames.SMOKE_A);
-    smoke1.play('smoke_flicker');
-    this.smokeGroup.add(smoke1);
+
+    const map = buildMap(this, MAP_1);
+
+    map.walls.forEach(w => {
+      if (w.type === 'water') {
+        const water = new Water(this, w.x, w.y, 'sheet', Frames.WATER_A);
+        water.play('water_ripple');
+        this.watersGroup.add(water);
+      }
+    });
+
+    map.smokeSpots.forEach(s => {
+      const smoke = new Smoke(this, s.x, s.y, 'sheet', Frames.SMOKE_A);
+      smoke.play('smoke_flicker');
+      this.smokeGroup.add(smoke);
+    });
 
 
     //Ground
@@ -89,9 +97,15 @@ export default class GameScene extends Phaser.Scene {
     this.bulletsGroup = this.physics.add.group();
     this.wallsGroup = this.physics.add.staticGroup();
 
-    this.wallsGroup.add(new BrickWall(this, 300, 300, 'sheet', Frames.BRICK));
-    this.wallsGroup.add(new BrickWall(this, 332, 300, 'sheet', Frames.BRICK));
-    this.wallsGroup.add(new SteelWall(this, 300, 332, 'sheet', Frames.STEEL));
+    
+
+    const wallClasses = { brick: BrickWall, steel: SteelWall };
+    map.walls.forEach(w => {
+      const WallClass = wallClasses[w.type];
+      if (!WallClass) return;
+      const frame = w.type === 'brick' ? Frames.BRICK : Frames.STEEL;
+      this.wallsGroup.add(new WallClass(this, w.x, w.y, 'sheet', frame));
+    });
 
     //Bullet
     this.bulletsGroup = this.physics.add.group();
@@ -100,12 +114,12 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.bulletsGroup, this.bulletsGroup, this.handleBulletBulletCollision, null, this);
 
     //Player
-    this.player1 = new PlayerTank(this, 100, 100, 'sheet', {
+    this.player1 = new PlayerTank(this, map.player1Start.x, map.player1Start.y, 'sheet', {
       up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
     }, Frames.PLAYER1);
     this.physics.add.existing(this.player1);
-    
-    this.player2 = new PlayerTank(this, 700, 500, 'sheet', {
+
+    this.player2 = new PlayerTank(this, map.player2Start.x, map.player2Start.y, 'sheet', {
       up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
     }, Frames.PLAYER2);
     this.physics.add.existing(this.player2);
@@ -119,13 +133,7 @@ export default class GameScene extends Phaser.Scene {
     //Enemy
     this.enemiesGroup = this.physics.add.group();
 
-    const spawnPoints = [
-      { x: 100, y: 50 },
-      { x: 400, y: 50 },
-      { x: 700, y: 50 }
-    ];
-
-    this.enemySpawner = new EnemySpawner(this, spawnPoints, {
+    this.enemySpawner = new EnemySpawner(this, map.spawnPoints, {
       totalEnemies: 10,
       maxOnScreen: 4,
       spawnDelay: 2000
@@ -139,8 +147,7 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
     this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
     this.baseGroup = this.physics.add.staticGroup();
-    this.base = this.baseGroup.create(400, 580, 'sheet', Frames.BASE_A);
-    this.base.play('base_idle');
+    this.base = this.baseGroup.create(map.basePosition.x, map.basePosition.y, 'sheet', Frames.BASE_A);    this.base.play('base_idle');
 
     this.physics.add.collider(this.player1, this.baseGroup);
     this.physics.add.collider(this.player2, this.baseGroup);
