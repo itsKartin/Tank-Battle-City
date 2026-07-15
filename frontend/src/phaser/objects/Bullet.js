@@ -7,7 +7,6 @@ export default class Bullet extends Phaser.GameObjects.Sprite {
 
     this.speed = 300;
     this.direction = direction;
-    this.setScale(0.1);
   }
 
   launch() {

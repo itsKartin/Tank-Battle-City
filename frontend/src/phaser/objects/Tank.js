@@ -9,8 +9,7 @@ export default class Tank extends Phaser.GameObjects.Sprite {
     scene.physics.add.existing(this);
 
     this.speed = 150;
-    this.direction = 'up'; 
-    this.setScale(0.04);
+    this.direction = 'up';
     this.activeBullets = [];
     this.maxBullets = 1;
 
