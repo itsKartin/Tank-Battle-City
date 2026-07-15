@@ -14,6 +14,10 @@ import Frames from '../constants/Frames';
 >>>>>>> phaser
 
 export default class GameScene extends Phaser.Scene {
+  init(data) {
+    this.mode = data?.mode === 2 ? 2 : 1;
+  }
+
   preload() {
     this.load.spritesheet('sheet', 'assets/sprites/sheet.png', {
       frameWidth: 32,
