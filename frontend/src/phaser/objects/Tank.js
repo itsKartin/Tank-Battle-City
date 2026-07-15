@@ -1,15 +1,15 @@
 import Phaser from 'phaser';
+import Frames from '../constants/Frames';
 import Bullet from './Bullet';
 
 export default class Tank extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y, texture) {
-    super(scene, x, y, texture);
+  constructor(scene, x, y, texture, frame) {
+    super(scene, x, y, texture, frame);
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
     this.speed = 150;
-    this.direction = 'up'; 
-    this.setScale(0.04);
+    this.direction = 'up';
     this.activeBullets = [];
     this.maxBullets = 1;
 
@@ -36,7 +36,7 @@ export default class Tank extends Phaser.GameObjects.Sprite {
       right: { x: 20, y: 0 }
     };
     const offset = offsets[this.direction];
-    const bullet = new Bullet(this.scene, this.x + offset.x, this.y + offset.y, 'bullet', this.direction);
+    const bullet = new Bullet(this.scene, this.x + offset.x, this.y + offset.y, 'sheet', Frames.BULLET, this.direction);
     bullet.owner = this;
     this.activeBullets.push(bullet);
     return bullet;

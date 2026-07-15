@@ -1,13 +1,12 @@
 import Phaser from 'phaser';
 
 export default class Bullet extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y, texture, direction) {
-    super(scene, x, y, texture);
+  constructor(scene, x, y, texture, frame, direction) {
+    super(scene, x, y, texture, frame);
     scene.add.existing(this);
 
     this.speed = 300;
     this.direction = direction;
-    this.setScale(0.1);
   }
 
   launch() {

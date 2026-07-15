@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 import Tank from './Tank';
 
 export default class PlayerTank extends Tank {
-  constructor(scene, x, y, texture, controls) {
-    super(scene, x, y, texture);
+  constructor(scene, x, y, texture, controls, frame) {
+    super(scene, x, y, texture, frame);
     this.controls = controls;
     this.cursors = scene.input.keyboard.addKeys(controls);
     this.fireKey = scene.input.keyboard.addKey(controls.fire);

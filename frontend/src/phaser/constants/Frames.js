@@ -1,0 +1,20 @@
+export default {
+  PLAYER1: 0,
+  PLAYER2: 1,
+  ENEMY: 2,
+  BULLET: 3,
+  BRICK: 4,
+  STEEL: 5,
+  WATER_A: 6,
+  WATER_B: 7,
+  SMOKE_A: 8,
+  SMOKE_B: 9,
+  GROUND_A: 10,
+  GROUND_B: 11,
+  BASE_A: 12,
+  BASE_B: 13,
+  HEART: 14,
+  SKULL: 15,
+  POWERUP_MEDKIT: 16,
+  POWERUP_CHESTPLATE: 17
+};

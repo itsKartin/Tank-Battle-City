@@ -10,8 +10,13 @@ const VECTORS = {
 };
 
 export default class EnemyTank extends Tank {
+<<<<<<< HEAD
   constructor(scene, x, y, texture) {
     super(scene, x, y, texture);
+=======
+  constructor(scene, x, y, texture, frame) {
+    super(scene, x, y, texture, frame);
+>>>>>>> phaser
     this.pickRandomDirection();
 
     this.directionTimer = scene.time.addEvent({
