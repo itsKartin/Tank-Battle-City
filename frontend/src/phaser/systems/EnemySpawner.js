@@ -1,9 +1,6 @@
 import Phaser from 'phaser';
 import EnemyTank from '../objects/EnemyTank';
-<<<<<<< HEAD
-=======
 import Frames from '../constants/Frames';
->>>>>>> phaser
 
 export default class EnemySpawner {
   constructor(scene, spawnPoints, config) {
@@ -30,11 +27,7 @@ export default class EnemySpawner {
     if (this.activeEnemies.length >= this.maxOnScreen) return;
 
     const point = Phaser.Utils.Array.GetRandom(this.spawnPoints);
-<<<<<<< HEAD
-    const enemy = new EnemyTank(this.scene, point.x, point.y, 'tank');
-=======
     const enemy = new EnemyTank(this.scene, point.x, point.y, 'sheet', Frames.ENEMY);
->>>>>>> phaser
     this.scene.enemiesGroup.add(enemy);
     this.activeEnemies.push(enemy);
     this.spawned++;
