@@ -23,7 +23,7 @@ function GameCanvas() {
 
   return (
     // Le asignamos la referencia con "ref" y definimos el tamaño
-    <div ref={containerRef} className="w-[800px] h-[600px] bg-black" />
+    <div ref={containerRef} className="w-[800px] h-[608px] bg-black" />
   );
 }
 

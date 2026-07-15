@@ -13,6 +13,10 @@ export default class GameScene extends Phaser.Scene {
     this.mode = data?.mode === 2 ? 2 : 1;
   }
 
+  constructor() {
+    super('GameScene');
+  } 
+
   preload() {
     this.load.spritesheet('sheet', 'assets/sprites/sheet.png', {
       frameWidth: 32,
@@ -89,6 +93,8 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.collider(this.player1, this.wallsGroup);
     this.physics.add.collider(this.player2, this.wallsGroup);
     this.physics.add.collider(this.player1, this.player2);
+    this.physics.add.collider(this.player1, this.watersGroup);
+    this.physics.add.collider(this.player2, this.watersGroup);
 
     //Enemy
     this.enemiesGroup = this.physics.add.group();
@@ -106,6 +112,7 @@ export default class GameScene extends Phaser.Scene {
     });
 
     this.physics.add.collider(this.enemiesGroup, this.wallsGroup);
+    this.physics.add.collider(this.enemiesGroup, this.watersGroup);
     this.physics.add.collider(this.player1, this.enemiesGroup);
     this.physics.add.collider(this.player2, this.enemiesGroup);
     this.physics.add.overlap(this.bulletsGroup, this.enemiesGroup, this.handleBulletEnemyCollision, null, this);
