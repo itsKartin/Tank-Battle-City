@@ -9,6 +9,9 @@ import EnemyTank from '../objects/EnemyTank';
 import Frames from '../constants/Frames';
 import PauseMenu from '../ui/PauseMenu';
 import GameOverMenu from '../ui/GameOverMenu';
+import ScoreManager from '../systems/ScoreManager';
+import FullscreenGuard from '../systems/FullscreenGuard';
+
 
 export default class GameScene extends Phaser.Scene {
   init(data) {
@@ -37,6 +40,11 @@ export default class GameScene extends Phaser.Scene {
     this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.P);
     this.pauseMenu = new PauseMenu(this);
     this.gameOverMenu = new GameOverMenu(this);
+
+    this.scoreManager = new ScoreManager(this, 16, 16);
+
+
+    this.fullscreenGuard = new FullscreenGuard();
 
     //Water animeation
     this.anims.create({
@@ -152,13 +160,14 @@ export default class GameScene extends Phaser.Scene {
 
   //Bullet-enemy collision
   handleBulletEnemyCollision(bullet, enemy) {
-    if (bullet.owner instanceof EnemyTank) return;
-  
-    bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
-    bullet.destroy();
-    this.enemySpawner.removeEnemy(enemy);
-    enemy.destroy();
-  }
+  if (bullet.owner instanceof EnemyTank) return;
+
+  bullet.owner.activeBullets = bullet.owner.activeBullets.filter(b => b !== bullet);
+  bullet.destroy();
+  this.enemySpawner.removeEnemy(enemy);
+  enemy.destroy();
+  this.scoreManager.addPoints(500);
+}
 
   //Bullet-bullet collision  
   handleBulletBulletCollision(bulletA, bulletB) {
@@ -223,13 +232,17 @@ export default class GameScene extends Phaser.Scene {
   
   //Game over
  
-  handleGameOver() {
-    if (this.gameOver) return;
-    this.gameOver = true;
-    this.physics.pause();
-    this.time.paused = true;
-    this.gameOverMenu.show(() => this.scene.start('MenuScene'));
-  }
+ handleGameOver() {
+  if (this.gameOver) return;
+  this.gameOver = true;
+  this.physics.pause();
+  this.time.paused = true;
+  this.gameOverMenu.show(
+    this.scoreManager.getScore(),
+    1,
+    () => this.scene.start('MenuScene')
+  );
+}
 
 
   createPlaceholderTextures() {

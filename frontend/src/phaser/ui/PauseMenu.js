@@ -31,33 +31,39 @@ export default class PauseMenu {
     }
   }
 
-  createButton(x, y, label, onClick) {
-    const container = this.scene.add.container(x, y).setDepth(1001);
+ createButton(x, y, label, onClick) {
+  const paddingX = 40;
+  const minWidth = 260;
+  const buttonHeight = 56;
 
-    const bg = this.scene.add.rectangle(0, 0, 260, 56, 0x0f172a)
-      .setStrokeStyle(2, 0x1f2833)
-      .setInteractive({ useHandCursor: true });
+  const text = this.scene.add.text(0, 0, label, {
+    fontFamily: 'Rajdhani, sans-serif',
+    fontSize: '20px',
+    fontStyle: 'bold',
+    color: '#ffffff',
+    letterSpacing: 2,
+  }).setOrigin(0.5);
 
-    const text = this.scene.add.text(0, 0, label, {
-      fontFamily: 'Rajdhani, sans-serif',
-      fontSize: '20px',
-      fontStyle: 'bold',
-      color: '#ffffff',
-      letterSpacing: 2,
-    }).setOrigin(0.5);
+  const buttonWidth = Math.max(minWidth, text.width + paddingX);
 
-    container.add([bg, text]);
+  const container = this.scene.add.container(x, y);
 
-    bg.on('pointerover', () => {
-      bg.setStrokeStyle(2, 0xf2a900);
-      text.setColor('#f2a900');
-    });
-    bg.on('pointerout', () => {
-      bg.setStrokeStyle(2, 0x1f2833);
-      text.setColor('#ffffff');
-    });
-    bg.on('pointerup', onClick);
+  const bg = this.scene.add.rectangle(0, 0, buttonWidth, buttonHeight, 0x0f172a)
+    .setStrokeStyle(2, 0x1f2833)
+    .setInteractive({ useHandCursor: true });
 
-    return container;
-  }
+  container.add([bg, text]);
+
+  bg.on('pointerover', () => {
+    bg.setStrokeStyle(2, 0xf2a900);
+    text.setColor('#f2a900');
+  });
+  bg.on('pointerout', () => {
+    bg.setStrokeStyle(2, 0x1f2833);
+    text.setColor('#ffffff');
+  });
+  bg.on('pointerup', onClick);
+
+  return container;
+}
 }
