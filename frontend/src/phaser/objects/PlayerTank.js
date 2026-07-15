@@ -44,6 +44,7 @@ export default class PlayerTank extends Tank {
       if (bullet) {
         this.scene.bulletsGroup.add(bullet);
         bullet.launch();
+        this.scene.sound.play('shot_sfx', { volume: 0.5 });
       }
     }
   }
