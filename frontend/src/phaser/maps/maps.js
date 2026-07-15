@@ -127,4 +127,7 @@ export function buildMap(scene, layout) {
   });
 
   return { walls, smokeSpots, spawnPoints, player1Start, player2Start, basePosition };
+
 }
+
+  export const MAPS = [MAP_1, MAP_2, MAP_3, MAP_4];

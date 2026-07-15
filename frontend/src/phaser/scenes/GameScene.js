@@ -9,14 +9,15 @@ import EnemyTank from '../objects/EnemyTank';
 import Frames from '../constants/Frames';
 import PauseMenu from '../ui/PauseMenu';
 import GameOverMenu from '../ui/GameOverMenu';
-import { MAP_1, buildMap } from '../maps/maps';
+import { MAP_1, MAP_2, MAP_3, MAP_4, MAPS, buildMap } from '../maps/maps';
 
 
 export default class GameScene extends Phaser.Scene {
   init(data) {
-    this.mode = data?.mode === 2 ? 2 : 1;
-  }
-
+  this.mode = data?.mode === 2 ? 2 : 1;
+  this.mapIndex = data?.mapIndex || 0;
+  this.levelComplete = false;
+}
   constructor() {
     super('GameScene');
   } 
@@ -68,7 +69,7 @@ export default class GameScene extends Phaser.Scene {
     this.watersGroup = this.physics.add.staticGroup();
     this.smokeGroup = this.add.group();
 
-    const map = buildMap(this, MAP_1);
+    const map = buildMap(this, MAPS[this.mapIndex]);
 
     map.walls.forEach(w => {
       if (w.type === 'water') {
@@ -277,9 +278,17 @@ export default class GameScene extends Phaser.Scene {
       if (outOfBounds) enemy.stop();
     });
     
-    if (this.enemySpawner.isLevelComplete()) {
-        console.log('level complete');
+  if (this.enemySpawner.isLevelComplete() && !this.levelComplete) {
+  this.levelComplete = true;
+  this.time.delayedCall(1500, () => {
+    const nextIndex = this.mapIndex + 1;
+    if (nextIndex < MAPS.length) {
+      this.scene.restart({ mode: this.mode, mapIndex: nextIndex });
+    } else {
+      console.log('victory, all maps cleared');
     }
+  });
+}
 
     this.bulletsGroup.getChildren().forEach(bullet => {
       const outOfBounds =
