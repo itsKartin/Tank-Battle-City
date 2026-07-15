@@ -14,6 +14,13 @@ export default class Tank extends Phaser.GameObjects.Sprite {
 
   }
 
+  applyHitbox(width, height) {
+  const offsetX = (this.width - width) / 2;
+  const offsetY = (this.height - height) / 2;
+  this.body.setSize(width, height);
+  this.body.setOffset(offsetX, offsetY);
+  }
+
   move(dx, dy) {
     this.body.setVelocity(dx * this.speed, dy * this.speed);
 

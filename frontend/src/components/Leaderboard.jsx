@@ -1,6 +1,28 @@
-import { DUMMY_SCORES } from '../data/scores';
+import { useEffect, useState } from 'react';
+
+const API_URL = 'http://localhost:8000/api/scores/';
 
 function Leaderboard() {
+  const [scores, setScores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => {
+        if (!res.ok) throw new Error();
+        return res.json();
+      })
+      .then((data) => {
+        setScores(data);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
+  }, []);
+
   const medalColor = (rank) =>
     rank === 1 ? "#f2a900" : rank === 2 ? "#e2e8f0" : rank === 3 ? "#d97706" : "#64748b";
 
@@ -22,16 +44,43 @@ function Leaderboard() {
               </tr>
             </thead>
             <tbody className="bg-[#0f172a]">
-              {DUMMY_SCORES.map((row) => (
-                <tr key={row.rank} className="border-t border-[#1e293b] hover:bg-[#1e293b]/50 transition-colors">
-                  <td className="px-5 py-4 font-bold" style={{ color: medalColor(row.rank) }}>
-                    {String(row.rank).padStart(2, "0")}
+              {loading && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-6 text-center text-[#94a3b8]">
+                    Cargando puntuaciones...
                   </td>
-                  <td className="px-5 py-4 text-white tracking-wide">{row.name}</td>
-                  <td className="px-5 py-4 text-right text-[#94a3b8]">{row.stage}</td>
-                  <td className="px-5 py-4 text-right text-[#38bdf8] font-bold">{row.score.toLocaleString()}</td>
                 </tr>
-              ))}
+              )}
+
+              {!loading && error && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-6 text-center text-[#94a3b8]">
+                    No se pudieron cargar las puntuaciones.
+                  </td>
+                </tr>
+              )}
+
+              {!loading && !error && scores.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-5 py-6 text-center text-[#94a3b8]">
+                    Aún no hay puntuaciones registradas.
+                  </td>
+                </tr>
+              )}
+
+              {!loading && !error && scores.map((row, index) => {
+                const rank = index + 1;
+                return (
+                  <tr key={row.id} className="border-t border-[#1e293b] hover:bg-[#1e293b]/50 transition-colors">
+                    <td className="px-5 py-4 font-bold" style={{ color: medalColor(rank) }}>
+                      {String(rank).padStart(2, "0")}
+                    </td>
+                    <td className="px-5 py-4 text-white tracking-wide">{row.player_name}</td>
+                    <td className="px-5 py-4 text-right text-[#94a3b8]">{row.level_reached}</td>
+                    <td className="px-5 py-4 text-right text-[#38bdf8] font-bold">{row.score.toLocaleString()}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

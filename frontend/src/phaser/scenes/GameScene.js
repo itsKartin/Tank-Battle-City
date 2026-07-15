@@ -14,11 +14,14 @@ import { MAP_1, MAP_2, MAP_3, MAP_4, MAPS, buildMap } from '../maps/maps';
 
 
 export default class GameScene extends Phaser.Scene {
+
   init(data) {
-  this.mode = data?.mode === 2 ? 2 : 1;
-  this.mapIndex = data?.mapIndex || 0;
-  this.levelComplete = false;
-}
+    this.mode = data?.mode === 2 ? 2 : 1;
+    this.mapIndex = data?.mapIndex || 0;
+    this.startingScore = data?.score || 0;
+    this.levelComplete = false;
+  }
+
   constructor() {
     super('GameScene');
   } 
@@ -34,6 +37,9 @@ export default class GameScene extends Phaser.Scene {
 
   create() {
 
+    this.events.once('shutdown', this.cleanup, this);
+    console.log('create() called, mapIndex:', this.mapIndex);
+    
     if (!this.sound.get('bgm')) {
       this.bgm = this.sound.add('bgm', { loop: true, volume: 0.4 });
       this.bgm.play();
@@ -51,7 +57,7 @@ export default class GameScene extends Phaser.Scene {
     this.pauseMenu = new PauseMenu(this);
     this.gameOverMenu = new GameOverMenu(this);
 
-    this.scoreManager = new ScoreManager(this, 16, 16);
+    this.scoreManager = new ScoreManager(this, 16, 16, this.startingScore);
 
 
     
@@ -104,7 +110,6 @@ export default class GameScene extends Phaser.Scene {
     //Ground
     this.add.tileSprite(400, 300, 800, 600, 'sheet', Frames.GROUND_A).setDepth(-1);
 
-    this.bulletsGroup = this.physics.add.group();
     this.wallsGroup = this.physics.add.staticGroup();
 
     
@@ -128,19 +133,18 @@ export default class GameScene extends Phaser.Scene {
       up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
     }, Frames.PLAYER1);
     this.physics.add.existing(this.player1);
+    this.player1.applyHitbox(20, 20);
     
     if (this.mode === 2) {
       this.player2 = new PlayerTank(this, map.player2Start.x, map.player2Start.y, 'sheet', {
         up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
       }, Frames.PLAYER2);
       this.physics.add.existing(this.player2);
+        this.player2.applyHitbox(20, 20);
     }
     
     this.physics.add.collider(this.player1, this.wallsGroup);
     this.physics.add.collider(this.player1, this.watersGroup);
-    this.physics.add.collider(this.player1, this.enemiesGroup);
-    this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
-    this.physics.add.collider(this.player1, this.baseGroup);
     
     if (this.player2) {
       this.physics.add.collider(this.player2, this.wallsGroup);
@@ -172,6 +176,12 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.enemiesGroup, this.baseGroup, this.handleEnemyBaseCollision, null, this);
 
         this.physics.add.overlap(this.bulletsGroup, this.wallsGroup, this.handleBulletWallCollision, null, this);
+  }
+
+  cleanup() {
+    if (this.enemySpawner && this.enemySpawner.spawnTimer) {
+      this.enemySpawner.spawnTimer.remove();
+    }
   }
 
  //Bullet-wall collision 
@@ -311,7 +321,11 @@ export default class GameScene extends Phaser.Scene {
   this.time.delayedCall(1500, () => {
     const nextIndex = this.mapIndex + 1;
     if (nextIndex < MAPS.length) {
-      this.scene.restart({ mode: this.mode, mapIndex: nextIndex });
+      this.scene.restart({
+        mode: this.mode,
+        mapIndex: nextIndex,
+        score: this.scoreManager.getScore()
+      });
     } else {
       console.log('victory, all maps cleared');
     }

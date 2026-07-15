@@ -1,12 +1,13 @@
 export default class ScoreManager {
-  constructor(scene, x, y) {
-    this.scene = scene;
-    this.score = 0;
 
-    this.text = scene.add.text(x, y, 'PUNTAJE: 0', {
+  constructor(scene, x, y, initialScore = 0) {
+    this.scene = scene;
+    this.score = initialScore;
+  
+    this.text = scene.add.text(x, y, `PUNTAJE: ${this.score}`, {
       fontFamily: 'JetBrains Mono, monospace',
       fontSize: '18px',
-      color: '#38bdf8',
+      color: '#0000',
     }).setDepth(1000);
   }
 

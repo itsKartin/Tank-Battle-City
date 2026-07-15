@@ -9,7 +9,20 @@ function LoreLine({ label, value }) {
   );
 }
 
-function ScreenshotPlaceholder({ label }) {
+
+function ScreenshotPlaceholder({ label, src }) {
+  if (src) {
+    return (
+      <div className="relative aspect-video rounded-lg overflow-hidden border border-[#1f2833] bg-[#111318]">
+        <img src={src} alt={label} className="w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-transparent to-transparent" />
+        <span className="absolute bottom-3 left-3 font-mono text-[11px] text-[#8d9078] tracking-wider uppercase">
+          {label}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="relative aspect-video rounded-lg overflow-hidden border border-[#1f2833] bg-[#111318] bg-grid">
       <div className="absolute inset-0 flex items-center justify-center">
@@ -78,13 +91,12 @@ function Lore() {
             <p className="font-mono text-xs tracking-[0.3em] text-[#c99a4a] mb-2 uppercase">Vista previa</p>
             <h2 className="font-display font-bold text-3xl text-[#ffffff] uppercase tracking-wide">Capturas</h2>
             <p className="text-[#6b6e5c] text-sm mt-2 font-mono">
-              placeholders — reemplazar con capturas reales
             </p>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
-            <ScreenshotPlaceholder label="Palacio - Planta baja" />
-            <ScreenshotPlaceholder label="Cabo Pérez en acción" />
-            <ScreenshotPlaceholder label="Asedio S.W.A.T." />
+            <ScreenshotPlaceholder label="Palacio - Planta baja" src="/images/screenshot-1.png" />
+            <ScreenshotPlaceholder label="Cabo Pérez en acción" src="/images/screenshot-2.png" />
+            <ScreenshotPlaceholder label="Asedio S.W.A.T." src="/images/screenshot-3.png" />
           </div>
         </div>
       </section>

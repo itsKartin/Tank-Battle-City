@@ -40,7 +40,11 @@ export default class GameOverMenu extends PauseMenu {
 
       this.createNameInput(width, height);
 
+
+      let submitted = false;
       const saveButton = this.createButton(width / 2, height * 0.62, 'GUARDAR', async () => {
+        if (submitted) return;
+        submitted = true;
         const name = this.nameInput.value.trim() || 'ANONIMO';
         try {
           await ScoreService.submitScore(name, score, levelReached);
@@ -49,6 +53,7 @@ export default class GameOverMenu extends PauseMenu {
         }
         this.closeAndExit(onExit);
       });
+
       this.container.add(saveButton);
 
       skipButtonY = height * 0.62 + 70;
