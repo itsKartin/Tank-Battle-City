@@ -2,16 +2,11 @@ import Phaser from 'phaser';
 import PlayerTank from '../objects/PlayerTank';
 import BrickWall from '../objects/BrickWall';
 import SteelWall from '../objects/SteelWall';
-<<<<<<< HEAD
-import EnemySpawner from '../systems/EnemySpawner';
-import EnemyTank from '../objects/EnemyTank';
-=======
 import Water from '../objects/Water';
 import Smoke from '../objects/Smoke';
 import EnemySpawner from '../systems/EnemySpawner';
 import EnemyTank from '../objects/EnemyTank';
 import Frames from '../constants/Frames';
->>>>>>> phaser
 
 export default class GameScene extends Phaser.Scene {
   preload() {
@@ -63,29 +58,12 @@ export default class GameScene extends Phaser.Scene {
     //Ground
     this.add.tileSprite(400, 300, 800, 600, 'sheet', Frames.GROUND_A).setDepth(-1);
 
-    //Walls
+    this.bulletsGroup = this.physics.add.group();
     this.wallsGroup = this.physics.add.staticGroup();
 
-<<<<<<< HEAD
-    this.wallsGroup.add(new BrickWall(this, 300, 300, 'brick'));
-    this.wallsGroup.add(new BrickWall(this, 332, 300, 'brick'));
-    this.wallsGroup.add(new SteelWall(this, 300, 332, 'steel'));
-
-    //Bullet
-    this.bulletsGroup = this.physics.add.group();
-    this.physics.add.overlap(this.bulletsGroup, this.wallsGroup, this.handleBulletWallCollision, null, this);
-
-    this.physics.add.overlap(this.bulletsGroup, this.bulletsGroup, this.handleBulletBulletCollision, null, this);
-
-    //Player
-    this.player1 = new PlayerTank(this, 100, 100, 'tank', {
-      up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
-    });
-=======
     this.wallsGroup.add(new BrickWall(this, 300, 300, 'sheet', Frames.BRICK));
     this.wallsGroup.add(new BrickWall(this, 332, 300, 'sheet', Frames.BRICK));
     this.wallsGroup.add(new SteelWall(this, 300, 332, 'sheet', Frames.STEEL));
->>>>>>> phaser
 
     //Bullet
     this.bulletsGroup = this.physics.add.group();
@@ -97,10 +75,12 @@ export default class GameScene extends Phaser.Scene {
     this.player1 = new PlayerTank(this, 100, 100, 'sheet', {
       up: 'W', down: 'S', left: 'A', right: 'D', fire: 'SPACE'
     }, Frames.PLAYER1);
+    this.physics.add.existing(this.player1);
     
     this.player2 = new PlayerTank(this, 700, 500, 'sheet', {
       up: 'UP', down: 'DOWN', left: 'LEFT', right: 'RIGHT', fire: 'ENTER'
     }, Frames.PLAYER2);
+    this.physics.add.existing(this.player2);
 
     this.physics.add.collider(this.player1, this.wallsGroup);
     this.physics.add.collider(this.player2, this.wallsGroup);
@@ -129,21 +109,18 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
     
     this.baseGroup = this.physics.add.staticGroup();
-<<<<<<< HEAD
-    this.base = this.baseGroup.create(400, 580, 'base');
-=======
     this.baseGroup = this.physics.add.staticGroup();
     this.base = this.baseGroup.create(400, 580, 'sheet', Frames.BASE_A);
 
     this.base.play('base_idle');
 
->>>>>>> phaser
     this.physics.add.collider(this.player1, this.baseGroup);
     this.physics.add.collider(this.player2, this.baseGroup);
     this.physics.add.collider(this.enemiesGroup, this.baseGroup);
     this.physics.add.overlap(this.bulletsGroup, this.baseGroup, this.handleBulletBaseCollision, null, this);
     this.physics.add.overlap(this.enemiesGroup, this.baseGroup, this.handleEnemyBaseCollision, null, this);
 
+        this.physics.add.overlap(this.bulletsGroup, this.wallsGroup, this.handleBulletWallCollision, null, this);
   }
 
  //Bullet-wall collision 

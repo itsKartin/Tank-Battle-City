@@ -26,7 +26,7 @@ export default class PlayerTank extends Tank {
     this.setPosition(this.startX, this.startY);
     this.stop();
   }
-  
+
   update() {
     let dx = 0, dy = 0;
 
