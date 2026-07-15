@@ -111,12 +111,6 @@ export default class GameScene extends Phaser.Scene {
     this.physics.add.overlap(this.bulletsGroup, this.enemiesGroup, this.handleBulletEnemyCollision, null, this);
     this.physics.add.overlap(this.player1, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
     this.physics.add.overlap(this.player2, this.bulletsGroup, this.handleBulletPlayerCollision, null, this);
-<<<<<<< HEAD
-    
-    this.baseGroup = this.physics.add.staticGroup();
-=======
-
->>>>>>> phaser
     this.baseGroup = this.physics.add.staticGroup();
     this.base = this.baseGroup.create(400, 580, 'sheet', Frames.BASE_A);
     this.base.play('base_idle');
